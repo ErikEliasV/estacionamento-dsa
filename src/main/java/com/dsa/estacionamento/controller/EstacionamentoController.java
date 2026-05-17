@@ -19,4 +19,10 @@ public class EstacionamentoController {
         String resultado = service.entradaVeiculo(placa, prioridade);
         return ResponseEntity.ok(resultado);
     }
+
+    @PostMapping("/saida")
+    public ResponseEntity<String> saidaVeiculo(@RequestParam String placa) {
+        String resultado = service.saidaVeiculo(placa);
+        return ResponseEntity.ok(resultado);
+    }
 }

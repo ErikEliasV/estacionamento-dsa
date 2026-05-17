@@ -40,4 +40,43 @@ public class EstacionamentoService {
             return "Estacionamento lotado. Veículo " + placa + " adicionado à fila de espera com prioridade " + prioridade + ".";
         }
     }
+
+    /**
+     * Saída de um veículo por placa.
+     * Libera a vaga na BST. Se a fila (Min-Heap) não estiver vazia, 
+     * o extractMin() pega a maior prioridade e aloca na vaga recém liberada.
+     */
+    public String saidaVeiculo(String placa) {
+        // Encontra a vaga ocupada por este veículo na BST
+        // (Busca linear simples na lista in-order, mas poderia ser otimizada com um Hash auxiliar, 
+        // ou fazendo uma varredura na BST)
+        java.util.List<Vaga> vagas = vagasBST.listarTodas();
+        Vaga vagaOcupada = null;
+        for (Vaga v : vagas) {
+            if (v.isOcupada() && placa.equals(v.getPlacaVeiculo())) {
+                vagaOcupada = v;
+                break;
+            }
+        }
+        
+        if (vagaOcupada == null) {
+            return "Veículo não encontrado no estacionamento.";
+        }
+        
+        // Libera a vaga
+        vagaOcupada.setOcupada(false);
+        vagaOcupada.setPlacaVeiculo(null);
+        String msg = "Veículo " + placa + " saiu. Vaga " + vagaOcupada.getNumero() + " liberada.";
+        
+        // Verifica se há fila de espera
+        if (!filaEsperaHeap.isEmpty()) {
+            HeapNode proximo = filaEsperaHeap.extractMin();
+            vagaOcupada.setOcupada(true);
+            vagaOcupada.setPlacaVeiculo(proximo.getVeiculo().getPlaca());
+            msg += "\n-> Veículo da fila " + proximo.getVeiculo().getPlaca() + 
+                   " (Prioridade " + proximo.getVeiculo().getPrioridade() + ") alocado na vaga " + vagaOcupada.getNumero() + ".";
+        }
+        
+        return msg;
+    }
 }
