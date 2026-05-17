@@ -30,4 +30,9 @@ public class EstacionamentoController {
     public ResponseEntity<java.util.List<com.dsa.estacionamento.model.Vaga>> listarVagas() {
         return ResponseEntity.ok(service.listarVagas());
     }
+
+    @GetMapping("/fila")
+    public ResponseEntity<java.util.List<com.dsa.estacionamento.dsa.heap.HeapNode>> listarFila() {
+        return ResponseEntity.ok(service.listarFila());
+    }
 }

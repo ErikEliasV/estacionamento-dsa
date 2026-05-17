@@ -86,4 +86,11 @@ public class EstacionamentoService {
     public java.util.List<Vaga> listarVagas() {
         return vagasBST.listarTodas();
     }
+
+    /**
+     * Retorna a lista da fila de espera (Min-Heap).
+     */
+    public java.util.List<HeapNode> listarFila() {
+        return filaEsperaHeap.getHeap();
+    }
 }
