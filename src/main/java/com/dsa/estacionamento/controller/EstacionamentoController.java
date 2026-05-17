@@ -25,4 +25,9 @@ public class EstacionamentoController {
         String resultado = service.saidaVeiculo(placa);
         return ResponseEntity.ok(resultado);
     }
+
+    @GetMapping("/vagas")
+    public ResponseEntity<java.util.List<com.dsa.estacionamento.model.Vaga>> listarVagas() {
+        return ResponseEntity.ok(service.listarVagas());
+    }
 }

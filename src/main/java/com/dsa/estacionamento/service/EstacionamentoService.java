@@ -79,4 +79,11 @@ public class EstacionamentoService {
         
         return msg;
     }
+
+    /**
+     * Retorna a lista de todas as vagas (In-Order).
+     */
+    public java.util.List<Vaga> listarVagas() {
+        return vagasBST.listarTodas();
+    }
 }
