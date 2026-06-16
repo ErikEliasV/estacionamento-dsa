@@ -1,56 +1,82 @@
-# Smart Parking DSA 🚗🅿️
+# Smart Parking DSA — Backend
 
-Este projeto é um **Sistema de Gerenciamento de Estacionamento Inteligente** desenvolvido como trabalho acadêmico para a disciplina de Estruturas de Dados e Análise de Algoritmos. O objetivo é utilizar estruturas de dados clássicas implementadas do zero em Java.
+Sistema de Gerenciamento de Estacionamento Inteligente desenvolvido como
+trabalho acadêmico para a disciplina de Estruturas de Dados. As estruturas
+clássicas são implementadas do zero em Java.
 
-## Tecnologias e Stack
-- Java 17
-- Spring Boot (Web)
+## Stack
+- Java 17 + Spring Boot 3.2 (Web)
 - Maven
-- Lombok (Redução de boilerplate)
-- API REST (Retornos JSON)
-- **Sem Banco de Dados**: Todo o gerenciamento de estados acontece em memória.
+- Lombok
+- API REST (JSON) — sem banco de dados, estado em memória
+- CORS aberto para `http://localhost:3000` (frontend Next.js)
 
-## Algoritmos Utilizados
-Neste projeto, NÃO utilizamos implementações nativas (como `TreeMap` ou `PriorityQueue`). Construímos as seguintes estruturas a partir da base:
+## Estruturas de dados
 
-### 1. Árvore Binária de Busca (BST)
-**Objetivo:** Organizar e localizar vagas livres e ocupadas de forma eficiente. A árvore provê complexidade de busca e inserção de **O(log n)** no caso médio.
-- **Nós:** Cada nó representa uma vaga, identificado por um código numérico único.
-- **Métodos principais:** `insert()`, `search()`, `delete()` e `printTree()`.
+### Árvore Binária de Busca (BST)
+Organiza as vagas por número. Busca, inserção e remoção em **O(log n)** no
+caso médio. A próxima vaga livre é localizada por traversal in-order.
 
-### 2. Fila de Prioridade (Min-Heap)
-**Objetivo:** Gerenciar a fila de espera do estacionamento quando todas as vagas estão ocupadas.
-- **Prioridades:** 
-  1. PCD (Maior prioridade - 1)
-  2. Idoso (2)
-  3. Gestante (3)
-  4. Comum (Menor prioridade - 4)
-- **Desempate:** Caso duas pessoas tenham a mesma prioridade, o desempate é feito pelo horário de chegada (timestamp).
-- **Métodos principais:** `insert()`, `extractMin()`, `heapifyUp()`, `heapifyDown()` e `printHeap()`.
+### Min-Heap (Fila de prioridade)
+Gerencia a fila quando o estacionamento lota. Prioridades:
 
-## Como Executar
+| Prioridade | Tipo     |
+|-----------:|----------|
+| 1          | PCD      |
+| 2          | Idoso    |
+| 3          | Gestante |
+| 4          | Comum    |
 
-1. Clone o repositório:
-```bash
-git clone <url-do-repo>
-cd estacionamento-dsa
+Desempate por horário de chegada (FIFO dentro do mesmo nível).
+
+## Endpoints
+
+| Método | Rota                              | Descrição                                |
+|-------:|-----------------------------------|------------------------------------------|
+| GET    | `/api/estacionamento/vagas`       | Lista todas as vagas (in-order)          |
+| GET    | `/api/estacionamento/fila`        | Fila de espera com posição e prioridade  |
+| GET    | `/api/estacionamento/stats`       | Estatísticas agregadas                   |
+| POST   | `/api/estacionamento/entrada`     | Body: `{ "placa", "prioridade" }`        |
+| POST   | `/api/estacionamento/saida`       | Body: `{ "placa" }`                      |
+| POST   | `/api/estacionamento/reset`       | Reinicia o estado (demonstração)         |
+
+Exemplo de resposta de `/entrada`:
+```json
+{
+  "sucesso": true,
+  "tipo": "ESTACIONADO",
+  "mensagem": "Veículo ABC1A23 estacionado na vaga 1.",
+  "placa": "ABC1A23",
+  "vagaNumero": 1,
+  "prioridade": 1,
+  "prioridadeLabel": "PCD"
+}
 ```
 
-2. Compile o projeto com Maven:
+Quando o estacionamento está lotado, `tipo` vira `FILA` e `vagaNumero` é
+`null`. Em erro (placa duplicada, prioridade inválida), `sucesso: false` e
+`tipo: ERRO`.
+
+## Como executar
+
 ```bash
 mvn clean install
-```
-
-3. Inicie o servidor Spring Boot:
-```bash
 mvn spring-boot:run
 ```
 
-O projeto rodará em `http://localhost:8080`.
+Servidor sobe em `http://localhost:8080`. Em seguida suba o frontend Next.js
+em `../Estacionamento_frontend`.
 
-## Git Flow
-O repositório está organizado seguindo a padronização do Git Flow e as mensagens seguem o padrão *Conventional Commits*:
-- `main`: Código estável, funcional e pronto para apresentação.
-- `develop`: Integração das novas features.
-- `feature/*`: Novas funcionalidades sendo construídas (ex: `feature/bst-vagas`).
-- `hotfix/*`: Correções de bugs.
+## Estrutura
+```
+src/main/java/com/dsa/estacionamento/
+├── EstacionamentoApplication.java
+├── DataSeeder.java              # Seed inicial: 10 vagas
+├── config/WebConfig.java        # CORS
+├── controller/                  # Endpoints REST
+├── service/                     # Regras de negócio
+├── dsa/bst/                     # Implementação BST
+├── dsa/heap/                    # Implementação Min-Heap
+├── dto/                         # Respostas estruturadas
+└── model/                       # Vaga, Veiculo
+```

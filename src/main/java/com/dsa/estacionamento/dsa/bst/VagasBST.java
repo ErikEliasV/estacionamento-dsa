@@ -188,4 +188,31 @@ public class VagasBST {
             listarInOrder(root.getRight(), vagas);
         }
     }
+
+    /**
+     * Limpa a árvore.
+     */
+    public void clear() {
+        this.root = null;
+    }
+
+    /**
+     * Reconstrói a árvore com N vagas (1..N) usando inserção balanceada.
+     */
+    public void rebuild(int n) {
+        clear();
+        List<Integer> order = new ArrayList<>();
+        balancedOrder(1, n, order);
+        for (Integer numero : order) {
+            insert(new Vaga(numero));
+        }
+    }
+
+    private void balancedOrder(int lo, int hi, List<Integer> out) {
+        if (lo > hi) return;
+        int mid = (lo + hi) / 2;
+        out.add(mid);
+        balancedOrder(lo, mid - 1, out);
+        balancedOrder(mid + 1, hi, out);
+    }
 }
